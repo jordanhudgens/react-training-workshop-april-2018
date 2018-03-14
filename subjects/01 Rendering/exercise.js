@@ -29,10 +29,53 @@ const DATA = {
   ]
 };
 
-function Menu() {
-  return <div>Open the console, you have failing tests.</div>;
+class Menu extends React.Component {
+  state = {
+    foodType: this.props.foodType,
+    sortAsc: true
+  }
+
+  updateFoodType = (event) => {
+    this.setState({ foodType: event.target.value });
+  }
+
+  toggleSortOrder = () => {
+    this.setState({ sortAsc: !this.state.sortAsc });
+  }
+
+  render() {
+    const items = DATA.items
+      .filter(item => item.type === this.state.foodType)
+      .sort(sortBy(this.state.sortAsc ? "name" : "-name"))
+      .map(item => <li key={item.id}>{item.name}</li>);
+
+    return (
+      <div>
+        <button onClick={this.toggleSortOrder}>Toggle Sort</button>
+        <select onChange={this.updateFoodType}>
+          <option>mexican</option>
+          <option>english</option>
+        </select>
+
+        <h1>{this.props.title}</h1>
+        <ul>{items}</ul>
+      </div>
+    );
+  }
+
 }
 
-ReactDOM.render(<Menu />, document.getElementById("app"), () => {
-  require("./tests").run();
-});
+ReactDOM.render(
+    <div>
+      <Menu
+        title="Mexican"
+        foodType="mexican"
+        items={DATA.items}
+      />
+      <Menu
+        title="English"
+        foodType="english"
+        items={DATA.items}
+      />
+    </div>
+    , document.getElementById("app"));
